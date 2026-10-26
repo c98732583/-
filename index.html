@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>若杳的序约</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500&family=Times+New+Roman:ital@0;1&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background-color: #f8f8f8;
+            background-image: url('https://aka.doubaocdn.com/s/n2cowr7UBX');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #333;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+            transition: background-position 0.3s ease-out;
+        }
+
+        .rain-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .rain-drop {
+            position: absolute;
+            width: 1px;
+            height: 20px;
+            background: linear-gradient(transparent, rgba(100,100,150,0.3));
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+
+        .slider-container {
+            display: flex;
+            width: 500vw;
+            height: 100vh;
+            transition: transform 0.3s ease-out;
+            position: relative;
+            z-index: 2;
+        }
+
+        .page {
+            width: 100vw;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .indicators {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        .indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: rgba(100,100,150,0.3);
+            transition: all 0.3s;
+        }
+
+        .indicator.active {
+            background-color: #c9184a;
+            transform: scale(1.2);
+        }
+
+        .start-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            animation: fadeIn 1s ease-in-out forwards;
+        }
+
+        .start-title {
+            font-size: 1.8rem;
+            font-weight: 500;
+            color: #333;
+            text-align: center;
+            line-height: 1.5;
+            z-index: 2;
+            margin-bottom: 30px;
+        }
+
+        .info-line {
+            font-size: 0.9rem;
+            color: #555;
+            text-align: center;
+            line-height: 2;
+            z-index: 2;
+            opacity: 0;
+        }
+
+        .start-hint {
+            margin-top: 50px;
+            font-size: 0.85rem;
+            color: #777;
+            z-index: 2;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .choose-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .choose-title {
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: #333;
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+        }
+
+        .choose-buttons {
+            display: flex;
+            gap: 40px;
+        }
+
+        .choose-btn {
+            font-size: 0.9rem;
+            color: #555;
+            cursor: pointer;
+            opacity: 0;
+            transition: color 0.3s;
+        }
+
+        .choose-btn:hover {
+            color: #c9184a;
+        }
+
+        .category-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .category-en {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+            font-size: 1.1rem;
+            color: #333;
+            text-align: center;
+            margin-bottom: 15px;
+            opacity: 0;
+        }
+
+        .category-zh {
+            font-size: 0.85rem;
+            color: #666;
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+        }
+
+        .category-buttons {
+            display: flex;
+            gap: 30px;
+        }
+
+        .category-btn {
+            font-size: 0.9rem;
+            color: #555;
+            cursor: pointer;
+            opacity: 0;
+            transition: color 0.3s;
+        }
+
+        .category-btn:hover {
+            color: #c9184a;
+        }
+
+        .text-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            max-width: 90%;
+            width: 400px;
+        }
+
+        .butterfly-deco {
+            position: absolute;
+            top: -40px;
+            left: -30px;
+            width: 100px;
+            height: auto;
+            opacity: 0.7;
+            z-index: 1;
+            animation: flutter 2s ease-in-out infinite;
+        }
+
+        @keyframes flutter {
+            0%, 100% {
+                transform: scaleX(1) translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: scaleX(0.8) translateY(-3px) rotate(2deg);
+            }
+        }
+
+        .lily-deco {
+            position: absolute;
+            top: -50px;
+            right: -30px;
+            width: 150px;
+            height: auto;
+            opacity: 0.6;
+            z-index: 1;
+        }
+
+        .bind-deco {
+            position: absolute;
+            bottom: -80px;
+            right: -20px;
+            width: 200px;
+            height: auto;
+            opacity: 0.8;
+            z-index: 1;
+        }
+
+        .text-title {
+            font-size: 2rem;
+            font-weight: 500;
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            opacity: 0;
+            z-index: 2;
+        }
+
+        .text-subtitle {
+            font-family: 'Times New Roman', serif;
+            font-size: 0.9rem;
+            color: #777;
+            text-align: center;
+            margin-bottom: 20px;
+            opacity: 0;
+            z-index: 2;
+        }
+
+        .text-line {
+            font-size: 1rem;
+            color: #555;
+            text-align: center;
+            line-height: 1.8;
+            margin-bottom: 10px;
+            opacity: 0;
+            z-index: 2;
+        }
+
+        .text-line-en {
+            font-family: 'Times New Roman', serif;
+            font-size: 0.85rem;
+            color: #777;
+            text-align: center;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            opacity: 0;
+            z-index: 2;
+        }
+
+        .notice-container {
+            max-width: 90%;
+            width: 400px;
+            border: 1px solid #ddd;
+            background-color: rgba(255,255,255,0.8);
+            padding: 30px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .notice-title {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+            color: #c9184a;
+            font-family: 'Ma Shan Zheng', cursive;
+            opacity: 0;
+        }
+
+        .notice-subtitle {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 0.85rem;
+            color: #777;
+            opacity: 0;
+        }
+
+        .notice-section {
+            margin-bottom: 25px;
+            opacity: 0;
+        }
+
+        .section-title {
+            font-size: 0.95rem;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .notice-item {
+            margin-bottom: 10px;
+            line-height: 1.6;
+            color: #555;
+            font-size: 0.8rem;
+        }
+
+        .notice-footer {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #999;
+            opacity: 0;
+        }
+
+        /* ========== 板评相册浮层 ========== */
+        .album-overlay{
+            position: fixed;
+            inset:0;
+            background: rgba(248,248,248,0.96);
+            z-index:999;
+            display:none;
+            padding:20px;
+            overflow-y:auto;
+        }
+        .album-overlay.show{
+            display:block;
+        }
+        .album-back{
+            position:fixed;
+            top:20px;
+            left:20px;
+            z-index:1001;
+            font-size:0.9rem;
+            color:#c9184a;
+            cursor:pointer;
+        }
+        .album-title{
+            text-align:center;
+            margin:40px 0 20px;
+            font-size:1.4rem;
+            color:#333;
+        }
+        .album-grid{
+            max-width:600px;
+            margin:0 auto;
+            display:grid;
+            grid-template-columns: 1fr 1fr;
+            gap:12px;
+        }
+        .album-grid img{
+            width:100%;
+            border-radius:4px;
+            cursor:pointer;
+            transition:0.2s;
+            object-fit:cover;
+        }
+        .album-grid img:hover{
+            transform:scale(1.02);
+        }
+        /* 大图预览弹窗 */
+        .img-preview{
+            position:fixed;
+            inset:0;
+            background:rgba(0,0,0,0.85);
+            z-index:2000;
+            display:none;
+            align-items:center;
+            justify-content:center;
+            padding:20px;
+        }
+        .img-preview.show{
+            display:flex;
+        }
+        .img-preview img{
+            max-width:100%;
+            max-height:90vh;
+        }
+        .img-preview-close{
+            position:absolute;
+            top:20px;
+            right:24px;
+            color:#fff;
+            font-size:24px;
+            cursor:pointer;
+        }
+
+        @media (max-width: 480px) {
+            .start-title {
+                font-size: 1.5rem;
+            }
+            .info-line {
+                font-size: 0.85rem;
+            }
+            .choose-title {
+                font-size: 1.2rem;
+            }
+            .text-title {
+                font-size: 1.5rem;
+            }
+            .butterfly-deco {
+                width: 70px;
+                top: -25px;
+                left: -10px;
+            }
+            .lily-deco {
+                width: 100px;
+                top: -30px;
+                right: -10px;
+            }
+            .bind-deco {
+                width: 150px;
+                bottom: -60px;
+                right: -10px;
+            }
+            .notice-container {
+                padding: 20px;
+            }
+            .album-grid{
+                grid-template-columns:1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="rain-container" id="rain"></div>
+
+    <div class="slider-container" id="slider">
+        <div class="page">
+            <div class="start-container">
+                <div class="start-title">若杳</div>
+                <div class="info-line" data-delay="0.1">女 | 双 | 天秤座 | INFP</div>
+                <div class="info-line" data-delay="0.2">风格：破碎 / 逻辑 / 剖析</div>
+                <div class="info-line" data-delay="0.3">随机掉落：救赎感 | 病恋感</div>
+                <div class="start-hint" data-delay="0.5">查看序幕</div>
+            </div>
+        </div>
+
+        <div class="page">
+            <div class="choose-container">
+                <div class="choose-title" data-delay="0">你想看见我么</div>
+                <div class="choose-buttons">
+                    <div class="choose-btn" data-delay="0.2">想</div>
+                    <div class="choose-btn" data-delay="0.3">不想</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page">
+            <div class="category-container">
+                <div class="category-en" data-delay="0">Weep with me, share my sadness.</div>
+                <div class="category-zh" data-delay="0.1">"同我啜泣，共我悲伤"</div>
+                <div class="category-buttons">
+                    <div class="category-btn" data-delay="0.2">话术</div>
+                    <div class="category-btn" data-delay="0.3">板评</div>
+                    <div class="category-btn" data-delay="0.4">卡类</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page">
+            <div class="text-container">
+                <img class="butterfly-deco" src="https://aka.doubaocdn.com/s/OhJCx5299n?alice_filename=Camera_1040g0k031g39mds6gc005por0307ceq7r0q98fo-removebg-preview.png" alt="蝴蝶">
+                <img class="lily-deco" src="https://aka.doubaocdn.com/s/8O27lfNxZY" alt="百合花">
+                <div class="text-title" data-delay="0">心动指南</div>
+                <div class="text-subtitle" data-delay="0.1">SECRETLY IN LOVE / HEART GUIDE</div>
+                <div class="text-line" data-delay="0.2">如果神明再给我一次机会</div>
+                <div class="text-line-en" data-delay="0.25">If the gods give me another chance</div>
+                <div class="text-line" data-delay="0.3">那么这一次</div>
+                <div class="text-line-en" data-delay="0.35">Then this time</div>
+                <div class="text-line" data-delay="0.4">会爱护好我的玫瑰</div>
+                <div class="text-line-en" data-delay="0.45">I will take good care of my rose</div>
+                <div class="text-line" data-delay="0.5">无法割舍的执念，喃喃自语的温柔</div>
+                <div class="text-line-en" data-delay="0.55">Unforgettable obsession, murmuring tenderness</div>
+                <img class="bind-deco" src="https://aka.doubaocdn.com/s/nqtH8gj7F2" alt="并蒂枝">
+            </div>
+        </div>
+
+        <div class="page">
+            <div class="notice-container">
+                <div class="notice-title" data-delay="0">病恋须知</div>
+                <div class="notice-subtitle" data-delay="0.1">人类的相遇是一种诅咒，不断渴求幸福就会痛苦</div>
+                <div class="notice-section" data-delay="0.2">
+                    <div class="section-title">◎ 个人信息</div>
+                    <div class="notice-item">1. 圈名：若杳</div>
+                    <div class="notice-item">2. 信息：女/双/天秤/INFP</div>
+                    <div class="notice-item">3. 游戏：光遇</div>
+                    <div class="notice-item">4. 风格：破碎/逻辑/剖析/温柔</div>
+                </div>
+                <div class="notice-section" data-delay="0.3">
+                    <div class="section-title">◎ 下单须知</div>
+                    <div class="notice-item">1. 请不要恶意辱骂等过于影响恋感的言语出现</div>
+                    <div class="notice-item">2. 请不要把我带入成任何人，如若因此原因影响代入感，概不负责</div>
+                    <div class="notice-item">3. 请在开始之前告诉我你的名字如未告知一律视以为我自定</div>
+                    <div class="notice-item">4. 请告知我你的喜点与雷点，不接受隐藏雷点</div>
+                    <div class="notice-item">5. 不接纯单口 若你觉得你的话实在是太少请酌情考虑选择我</div>
+                    <div class="notice-item">6. 下单默认不带剧情如若有剧情要求请告知</div>
+                    <div class="notice-item">7. 我会适当安抚你的情绪 比较温和</div>
+                    <div class="notice-item">8. 请不要故意找茬或者未在提前告知的情况下抛出难题来希望我做出什么惊艳的回答</div>
+                    <div class="notice-item">9. 随心而动 或许才会是最好的过程选择</div>
+                    <div class="notice-item">10. 单内请勿截图或者录屏发给他人 可以截一张留恋</div>
+                    <div class="notice-item">11. 下单即默认观看完须知</div>
+                </div>
+                <div class="notice-footer" data-delay="0.4">下单前仔细阅读须知 下单后默认已读并同意须知</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="indicators">
+        <div class="indicator active" data-index="0"></div>
+        <div class="indicator" data-index="1"></div>
+        <div class="indicator" data-index="2"></div>
+        <div class="indicator" data-index="3"></div>
+        <div class="indicator" data-index="4"></div>
+    </div>
+
+    <!-- ========== 板评相册，所有图片已经内置在线链接 ========== -->
+    <div class="album-overlay" id="albumOverlay">
+        <div class="album-back" id="backToSlider">← 返回</div>
+        <div class="album-title">板评合集</div>
+        <div class="album-grid" id="albumGrid">
+            <img src="https://p3-flow-image-sign.byteimg.com/ocean-cloud-tos/38001120001440488100800400400000~tplv-a9rns2rl98-image.image" alt="板评" class="album-img">
+            <img src="https://p3-flow-image-sign.byteimg.com/ocean-cloud-tos/38001120001440488100800400400001~tplv-a9rns2rl98-image.image" alt="板评" class="album-img">
+            <img src="https://p3-flow-image-sign.byteimg.com/ocean-cloud-tos/38001120001440488100800400400002~tplv-a9rns2rl98-image.image" alt="板评" class="album-img">
+            <img src="https://p3-flow-image-sign.byteimg.com/ocean-cloud-tos/38001120001440488100800400400003~tplv-a9rns2rl98-image.image" alt="板评" class="album-img">
+            <img src="https://p3-flow-image-sign.byteimg.com/ocean-cloud-tos/38001120001440488100800400400004~tplv-a9rns2rl98-image.image" alt="板评" class="album-img">
+            <img src="https://p3-flow-image-sign.byteimg.com/ocean-cloud-tos/38001120001440488100800400400005~tplv-a9rns2rl98-image.image" alt="板评" class="album-img">
+            <img src="https://p3-flow-image-sign.byteimg.com/ocean-cloud-tos/38001120001440488100800400400006~tplv-a9rns2rl98-image.image" alt="板评" class="album-img">
+            <img src="https://p3-flow-image-sign.byteimg.com/ocean-cloud-tos/38001120001440488100800400400007~tplv-a9rns2rl98-image.image" alt="板评" class="album-img">
+            <img src="https://p3-flow-image-sign.byteimg.com/ocean-cloud-tos/38001120001440488100800400400008~tplv-a9rns2rl98-image.image" alt="板评" class="album-img">
+            <img src="https://p3-flow-image-sign.byteimg.com/ocean-cloud-tos/38001120001440488100800400400009~tplv-a9rns2rl98-image.image" alt="板评" class="album-img">
+        </div>
+    </div>
+    <!-- 大图预览弹窗 -->
+    <div class="img-preview" id="imgPreview">
+        <span class="img-preview-close" id="closePreview">×</span>
+        <img id="previewImg" src="" alt="大图">
+    </div>
+
+    <script>
+        function createRain() {
+            const rainContainer = document.getElementById('rain');
+            for(let i=0; i<50; i++) {
+                const drop = document.createElement('div');
+                drop.classList.add('rain-drop');
+                drop.style.left = Math.random() * 100 + '%';
+                drop.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                drop.style.animationDelay = Math.random() * 2 + 's';
+                rainContainer.appendChild(drop);
+            }
+        }
+        createRain();
+
+        const slider = document.getElementById('slider');
+        const indicators = document.querySelectorAll('.indicator');
+        const body = document.body;
+        let currentPage = 0;
+        const totalPages = 5;
+        let startX = 0;
+        let moveX = 0;
+        let isMoving = false;
+
+        function resetPageAnimation(page) {
+            if(page === 0) {
+                const items = document.querySelectorAll('.start-container .info-line, .start-hint');
+                items.forEach(item => {
+                    item.style.transition = 'none';
+                    item.style.opacity = '0';
+                    item.style.transform = 'translateY(20px)';
+                });
+                setTimeout(() => {
+                    items.forEach(item => {
+                        const delay = item.dataset.delay || 0;
+                        setTimeout(() => {
+                            item.style.transition = 'all 0.5s ease-out';
+                            item.style.opacity = '1';
+                            item.style.transform = 'translateY(0)';
+                        }, delay * 1000);
+                    });
+                }, 100);
+            } else if(page === 1) {
+                const title = document.querySelector('.choose-title');
+                const items = document.querySelectorAll('.choose-btn');
+                title.style.transition = 'none';
+                title.style.opacity = '0';
+                title.style.transform = 'translateY(20px)';
+                items.forEach(item => {
+                    item.style.transition = 'none';
+                    item.style.opacity = '0';
+                    item.style.transform = 'translateY(20px)';
+                });
+                setTimeout(() => {
+                    title.style.transition = 'all 0.5s ease-out';
+                    title.style.opacity = '1';
+                    title.style.transform = 'translateY(0)';
+                    items.forEach(item => {
+                        const delay = item.dataset.delay || 0;
+                        setTimeout(() => {
+                            item.style.transition = 'all 0.5s ease-out';
+                            item.style.opacity = '1';
+                            item.style.transform = 'translateY(0)';
+                        }, delay * 1000);
+                    });
+                }, 100);
+            } else if(page === 2) {
+                const en = document.querySelector('.category-en');
+                const zh = document.querySelector('.category-zh');
+                const items = document.querySelectorAll('.category-btn');
+                en.style.transition = 'none';
+                en.style.opacity = '0';
+                en.style.transform = 'translateY(20px)';
+                zh.style.transition = 'none';
+                zh.style.opacity = '0';
+                zh.style.transform = 'translateY(20px)';
+                items.forEach(item => {
+                    item.style.transition = 'none';
+                    item.style.opacity = '0';
+                    item.style.transform = 'translateY(20px)';
+                });
+                setTimeout(() => {
+                    en.style.transition = 'all 0.5s ease-out';
+                    en.style.opacity = '1';
+                    en.style.transform = 'translateY(0)';
+                    setTimeout(() => {
+                        zh.style.transition = 'all 0.5s ease-out';
+                        zh.style.opacity = '1';
+                        zh.style.transform = 'translateY(0)';
+                    }, 100);
+                    items.forEach(item => {
+                        const delay = item.dataset.delay || 0;
+                        setTimeout(() => {
+                            item.style.transition = 'all 0.5s ease-out';
+                            item.style.opacity = '1';
+                            item.style.transform = 'translateY(0)';
+                        }, delay * 1000);
+                    });
+                }, 100);
+            } else if(page === 3) {
+                const title = document.querySelector('.text-title');
+                const subtitle = document.querySelector('.text-subtitle');
+                const lines = document.querySelectorAll('.text-line, .text-line-en');
+                title.style.transition = 'none';
+                title.style.opacity = '0';
+                title.style.transform = 'translateY(20px)';
+                subtitle.style.transition = 'none';
+                subtitle.style.opacity = '0';
+                subtitle.style.transform = 'translateY(20px)';
+                lines.forEach(item => {
+                    item.style.transition = 'none';
+                    item.style.opacity = '0';
+                    item.style.transform = 'translateY(20px)';
+                });
+                setTimeout(() => {
+                    title.style.transition = 'all 0.5s ease-out';
+                    title.style.opacity = '1';
+                    title.style.transform = 'translateY(0)';
+                    setTimeout(() => {
+                        subtitle.style.transition = 'all 0.5s ease-out';
+                        subtitle.style.opacity = '1';
+                        subtitle.style.transform = 'translateY(0)';
+                    }, 100);
+                    lines.forEach(item => {
+                        const delay = item.dataset.delay || 0;
+                        setTimeout(() => {
+                            item.style.transition = 'all 0.5s ease-out';
+                            item.style.opacity = '1';
+                            item.style.transform = 'translateY(0)';
+                        }, delay * 1000);
+                    });
+                }, 100);
+            } else if(page === 4) {
+                const title = document.querySelector('.notice-title');
+                const subtitle = document.querySelector('.notice-subtitle');
+                const sections = document.querySelectorAll('.notice-section');
+                const footer = document.querySelector('.notice-footer');
+                title.style.transition = 'none';
+                title.style.opacity = '0';
+                title.style.transform = 'translateY(20px)';
+                subtitle.style.transition = 'none';
+                subtitle.style.opacity = '0';
+                subtitle.style.transform = 'translateY(20px)';
+                sections.forEach(item => {
+                    item.style.transition = 'none';
+                    item.style.opacity = '0';
+                    item.style.transform = 'translateY(20px)';
+                });
+                footer.style.transition = 'none';
+                footer.style.opacity = '0';
+                footer.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    title.style.transition = 'all 0.5s ease-out';
+                    title.style.opacity = '1';
+                    title.style.transform = 'translateY(0)';
+                    setTimeout(() => {
+                        subtitle.style.transition = 'all 0.5s ease-out';
+                        subtitle.style.opacity = '1';
+                        subtitle.style.transform = 'translateY(0)';
+                    }, 100);
+                    sections.forEach(item => {
+                        const delay = item.dataset.delay || 0;
+                        setTimeout(() => {
+                            item.style.transition = 'all 0.5s ease-out';
+                            item.style.opacity = '1';
+                            item.style.transform = 'translateY(0)';
+                        }, delay * 1000);
+                    });
+                    setTimeout(() => {
+                        footer.style.transition = 'all 0.5s ease-out';
+                        footer.style.opacity = '1';
+                        footer.style.transform = 'translateY(0)';
+                    }, 400);
+                }, 100);
+            }
+        }
+
+        function updateIndicators() {
+            indicators.forEach((ind, index) => {
+                if(index === currentPage) {
+                    ind.classList.add('active');
+                } else {
+                    ind.classList.remove('active');
+                }
+            });
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            slider.style.transform = `translateX(-${currentPage * 100}vw)`;
+            body.style.backgroundPosition = `${50 - currentPage * 3}% center`;
+            updateIndicators();
+            resetPageAnimation(currentPage);
+        }
+
+        slider.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            isMoving = true;
+        });
+        slider.addEventListener('touchmove', (e) => {
+            if(!isMoving) return;
+            moveX = e.touches[0].clientX - startX;
+        });
+        slider.addEventListener('touchend', () => {
+            isMoving = false;
+            if(moveX > 50 && currentPage > 0) {
+                goToPage(currentPage - 1);
+            } else if(moveX < -50 && currentPage < totalPages - 1) {
+                goToPage(currentPage + 1);
+            }
+            moveX = 0;
+        });
+        slider.addEventListener('mousedown', (e) => {
+            startX = e.clientX;
+            isMoving = true;
+            slider.style.transition = 'none';
+        });
+        slider.addEventListener('mousemove', (e) => {
+            if(!isMoving) return;
+            moveX = e.clientX - startX;
+            slider.style.transform = `translateX(calc(-${currentPage * 100}vw + ${moveX}px))`;
+            body.style.backgroundPosition = `${50 - currentPage * 3 - moveX / 30}% center`;
+        });
+        slider.addEventListener('mouseup', () => {
+            isMoving = false;
+            slider.style.transition = 'transform 0.3s ease-out';
+            if(moveX > 50 && currentPage > 0) {
+                goToPage(currentPage - 1);
+            } else if(moveX < -50 && currentPage < totalPages - 1) {
+                goToPage(currentPage + 1);
+            } else {
+                goToPage(currentPage);
+            }
+            moveX = 0;
+        });
+        indicators.forEach((ind, index) => {
+            ind.addEventListener('click', () => {
+                goToPage(index);
+            });
+        });
+
+        // 选择按钮
+        document.querySelectorAll('.choose-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if(btn.textContent === '想') {
+                    goToPage(2);
+                } else {
+                    goToPage(0);
+                }
+            });
+        });
+
+        // 分类按钮：话术/卡类跳文案页，板评打开相册
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if(btn.textContent === '板评'){
+                    document.getElementById('albumOverlay').classList.add('show');
+                }else{
+                    goToPage(3);
+                }
+            });
+        });
+
+        // 相册返回
+        document.getElementById('backToSlider').onclick = ()=>{
+            document.getElementById('albumOverlay').classList.remove('show');
+        }
+        // 大图预览
+        const preview = document.getElementById('imgPreview');
+        const previewImg = document.getElementById('previewImg');
+        document.querySelectorAll('.album-img').forEach(img=>{
+            img.onclick = ()=>{
+                previewImg.src = img.src;
+                preview.classList.add('show');
+            }
+        })
+        document.getElementById('closePreview').onclick = ()=>{
+            preview.classList.remove('show');
+        }
+        preview.onclick = (e)=>{
+            if(e.target === preview) preview.classList.remove('show');
+        }
+
+        resetPageAnimation(0);
+    </script>
+</body>
+</html>
